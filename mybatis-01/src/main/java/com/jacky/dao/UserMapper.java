@@ -37,4 +37,21 @@ public interface UserMapper {
      * @return
      */
     User selectByMap(Map<String, Object> map);
+
+
+    /**
+     * 根据名字进行模糊查询
+     * @return
+     */
+    List<User> selectByName(@Param("username") String name);
+
+    /**
+     * 增加用户
+     */
+    int insert(User user);
+
+    int updateByUserID(User user);
+
+    int deleteByID(int id);
 }
+

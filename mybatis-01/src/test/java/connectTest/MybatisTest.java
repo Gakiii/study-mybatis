@@ -93,11 +93,66 @@ public class MybatisTest {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             UserMapper mapper = session.getMapper(UserMapper.class);
             Map<String, Object> map = new HashMap<>();
-            map.put("username", "itnanls");
+            map.put("username1", "itnanls");
             map.put("password", "123456");
             UserMapper mapper1 = session.getMapper(UserMapper.class);
             User user1 = mapper1.selectByMap(map);
             log.debug(user1.toString());
         }
     }
+
+    @Test
+    public void TestSelectByUsername() {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            List<User> i = mapper.selectByName("i");
+            log.debug(i.toString());
+        }
+    }
+
+    @Test
+    public void insertTest() {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            try {
+                mapper.insert(new User(1334, "lucy", "13131"));
+                int a = 1/0;
+                session.commit();
+
+            } catch (Exception e) {
+                log.debug("[{}] some thing wrong", e.toString());
+                session.rollback();
+            }
+
+        }
+    }
+
+    @Test
+    public void updateTest() {
+        try (SqlSession session = sqlSessionFactory.openSession(true)) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            try {
+                mapper.updateByUserID(new User(134, "newlucy", "131312"));
+            } catch (Exception e) {
+                log.debug("[{}] some thing wrong", e.toString());
+                session.rollback();
+            }
+        }
+    }
+
+    @Test
+    public void deleteTest() {
+        try (SqlSession session = sqlSessionFactory.openSession(true)) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            try {
+                int i = mapper.deleteByID(134);
+                log.debug("受影响行数{}", i);
+            } catch (Exception e) {
+                log.debug("[{}] some thing wrong", e.toString());
+                session.rollback();
+            }
+        }
+    }
+
+
 }
