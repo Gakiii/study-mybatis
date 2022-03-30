@@ -81,7 +81,7 @@ public class MybatisTest {
     public void TestSelectByUSer() {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             UserMapper mapper = session.getMapper(UserMapper.class);
-            User user = new User(2,"itnanls","123456");
+            User user = new User(0,"itnanls","");
             UserMapper mapper1 = session.getMapper(UserMapper.class);
             User user1 = mapper1.selectByUser(user);
             log.debug(user1.toString());
@@ -110,6 +110,17 @@ public class MybatisTest {
         }
     }
 
+
+    @Test
+    public void TestSelectByIds() {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            List<Integer> a = List.of(1,2,3,4,5);
+            List<User> users = mapper.selectByIds(a);
+            log.debug("select users are {}", users);
+        }
+    }
+
     @Test
     public void insertTest() {
         try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -132,7 +143,8 @@ public class MybatisTest {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             UserMapper mapper = session.getMapper(UserMapper.class);
             try {
-                mapper.updateByUserID(new User(134, "newlucy", "131312"));
+                int newlucy = mapper.updateByUserID(new User(134, "newlucy1", "131312"));
+                log.debug("受影响的行数{}", newlucy);
             } catch (Exception e) {
                 log.debug("[{}] some thing wrong", e.toString());
                 session.rollback();

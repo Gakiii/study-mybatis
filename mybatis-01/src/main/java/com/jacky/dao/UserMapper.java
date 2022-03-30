@@ -53,5 +53,8 @@ public interface UserMapper {
     int updateByUserID(User user);
 
     int deleteByID(int id);
+
+    List<User> selectByIds(@Param("ids") List<Integer> ids);
+
 }
 
