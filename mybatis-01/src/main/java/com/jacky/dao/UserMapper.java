@@ -56,5 +56,10 @@ public interface UserMapper {
 
     List<User> selectByIds(@Param("ids") List<Integer> ids);
 
+    /**
+     * 批量插入
+     */
+    int insertBatch(@Param("users") List<User> users);
+
 }
 

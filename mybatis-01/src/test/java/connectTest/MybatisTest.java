@@ -81,7 +81,7 @@ public class MybatisTest {
     public void TestSelectByUSer() {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             UserMapper mapper = session.getMapper(UserMapper.class);
-            User user = new User(0,"itnanls","");
+            User user = new User(0,"itnals","3453");
             UserMapper mapper1 = session.getMapper(UserMapper.class);
             User user1 = mapper1.selectByUser(user);
             log.debug(user1.toString());
@@ -163,6 +163,18 @@ public class MybatisTest {
                 log.debug("[{}] some thing wrong", e.toString());
                 session.rollback();
             }
+        }
+    }
+
+    @Test
+    public void insertBatchTest() {
+        try (SqlSession session = sqlSessionFactory.openSession(true)) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            List<User> abc = List.of(new User("xx","xxpas"),
+                                     new User("xx1","xx1pass"));
+            int i = mapper.insertBatch(abc);
+            log.debug("影响行数",i);
+
         }
     }
 
