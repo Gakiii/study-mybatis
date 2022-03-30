@@ -275,3 +275,69 @@ User user = mapper.select("itnanls", "123456");
 也可以进行手动管理
 ### 注解开发
 不常用 详见ydlclass的课程
+
+### 别名设置
+在开发过程中有可能存在数据库字段和Bean中的实体类的字段不相匹配的情况
+这样会导致Mybatis的自动将结果转换为Bean类出错，这个时候可以设置一个映射结果
+在UserMapper.xml中进行如下配置
+```xml
+<resultMap id="userMap" type="com.jacky.entity.User">
+    <id column="id" property="id"/>
+<!--    前面为数据库名称  后面为配置文件中的名称-->
+    <result column="user_name" property="username"/>
+    <result column="password" property="password"/>
+</resultMap>
+```
+同时我们在指定mybatis的转化类型，即resultType的时候，使用全限定名称会稍许麻烦(使用IDEA插件
+MybatisX 可以自动生成)
+可以设置别名, 在mybatis-config.xml中进行如下设置
+```xml
+    <typeAliases>
+        <typeAlias type="com.jacky.entity.User"  alias="user"/>
+    </typeAliases>
+```
+之后进行就可以利用user代替了(大小写不重要，mybatis会自动帮我我们处理)
+
+### 动态SQL (重要！)
+动态SQL的使用使得SQL非常灵活
+主要可以使用Mybatis的标签，<if></if> 进行判断，如利用if标签进行查询的代码可以如下
+```xml
+    <select id="selectByUser" resultMap="userMap">
+        select id,user_name,password from user
+        <where>
+            <if test="id != 0">
+                and id = #{id}
+            </if>
+            <if test="username != null and username != ''">
+                and username=#{username}
+            </if>
+            <if test="password != null and password != ''">
+                and password=#{password}
+            </if>
+        </where>
+    </select>
+```
+添加where后可以解决and的重复问题
+
+进行更新的时候可以使用<set>标签，其代码如下
+```xml
+<update id="updateByUserID">
+        update user
+        <set>
+            <if test="username != null and username !=''">
+                user_name = #{username},
+            </if>
+            <if test="password != null and username != ''">
+                password = #{password},
+            </if>
+        </set>
+        <where>
+            <if test="id != 0">
+                id = #{id}
+            </if>
+        </where>
+    </update>
+```
+
+
+
