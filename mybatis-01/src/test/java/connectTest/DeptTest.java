@@ -1,6 +1,8 @@
 package connectTest;
 
+import com.jacky.dao.DeptMapper;
 import com.jacky.dao.EmployeeMapper;
+import com.jacky.entity.Dept;
 import com.jacky.entity.Employee;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.io.Resources;
@@ -12,10 +14,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 @Slf4j
-public class EmployeeTest {
+public class DeptTest {
 
     public String resource;
     public InputStream inputStream;
@@ -36,23 +37,13 @@ public class EmployeeTest {
     @Test
     public void testSelect() {
         try (SqlSession session = sqlSessionFactory.openSession()){
-            EmployeeMapper mapper = session.getMapper(EmployeeMapper.class);
-            List<Employee> employees = mapper.selectALL();
-            log.debug("查询信息为{}", employees);
+//            EmployeeMapper mapper = session.getMapper(EmployeeMapper.class);
+//            Employee employee = mapper.selectByID(1);
+//            log.debug("查询信息为{}", employee);
+            DeptMapper mapper = session.getMapper(DeptMapper.class);
+            Dept select = mapper.select(1);
+            log.debug("查询信息为{}" ,select);
         }
     }
 
-    @Test
-    public void testSelectJoin() {
-        try (SqlSession session = sqlSessionFactory.openSession()){
-            EmployeeMapper mapper = session.getMapper(EmployeeMapper.class);
-            List<Employee> employees = mapper.selectALLJoin();
-            log.debug("查询信息为{}", employees);
-        }
-    }
-
-    @Test
-    public void sayhi() {
-        System.out.println("hello");
-    }
 }

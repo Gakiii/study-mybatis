@@ -339,5 +339,66 @@ MybatisX 可以自动生成)
     </update>
 ```
 
+### 高级映射
+在数据库中，对于一个员工，我们一般存储的是其部门ID，但是在Java实体类中
+我们会将整个部门信息作为一个对象来存储。这个时候Mybatis无法自动完成从数据库
+的ID，映射为一个Java对象的过程，需要我们手动的进行一些配置才能完成转换。
+
+道理很简单，我们如果仅从数据库中查询到部门ID的话，部门对象的字段并不完整，不能将其封装成一个部门对象
+首先就应该将所有的数据进行查询出来。在SQL中有子查询和联合查询两者方式，对应这Mybatis中的两种映射方式
+
+首先是子查询的方式，（这种方式较为复杂，且时间复杂度高）
+
+当我们查询到某个员工的时候，根据其查询到的did(部门ID)，再去查询部门信息
+对应的两条查询语句在各自的mapper.xml中如下:
+根据did 查询部门信息
+```xml
+<select id="select" resultType="com.jacky.entity.Dept">
+        select id, name from dept
+        <where>
+            id = #{id}
+        </where>
+</select>
+```
+查询员工信息, 注意 这里是将结果转换成了一个resultMap
+```xml
+<select id="selectALL" resultMap="selectEmployee">     
+    select id, `name`, did from employee
+</select>
+```
+而resultMap如下：
+```xml
+<resultMap id="selectEmployee" type="com.jacky.entity.Employee">
+<!--    常规封装-->
+    <id column="id" property="id"/>
+    <result column="name" property="name"/>
+    
+<!--    将colum(did) 作为参数 用 (select) 语句查询 结果映射为 javaType-->
+<!--    对应着为java对象中的字段 (property 为 dept)-->
+    <association property="dept" column="did" javaType="com.jacky.entity.Dept" select="com.jacky.dao.DeptMapper.select">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+    </association>
+</resultMap>
+```
+
+接下来是联合查询，有了上述的基础，联合查询就易懂很多
+查询以及映射的方式如下
+```xml
+<resultMap id="selectAllEmployByJoin" type="com.jacky.entity.Employee">
+        <id column="eid" property="id"/>
+        <result column="ename" property="name"/>
+        <association property="dept" javaType="com.jacky.entity.Dept">
+            <id column="did" property="id"/>
+            <result column="dname" property="name"/>
+        </association>
+</resultMap>
+
+<select id="selectALLJoin" resultType="com.jacky.entity.Employee">
+    select e.id, e.name, d.id, d.name from employee e left join dept d on d.id = e.did
+</select>
+```
+
+
 
 
